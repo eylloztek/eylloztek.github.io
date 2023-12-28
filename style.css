@@ -1,0 +1,91 @@
+:root {
+  --main-bg-color: #d1d1d1;
+  --gray: #262626;
+  --empty-box: #e8e8e8;
+  --filled-box: #d1d1d1;
+}
+
+body {
+  background: var(--main-bg-color);
+
+  font-size: large;
+  font-weight: bolder;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, sans-serif;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-self: center;
+  font-size: 100px;
+  color: var(--gray);
+  padding-top: 27vh;
+  padding-bottom: 3vh;
+
+  transition: padding-top .6s ease-in-out;
+}
+
+.title-top {
+  padding-top: 2vh;
+}
+
+.button {
+  width: 130px;
+  height: 40px;
+  background-color: transparent;
+  outline: var(--gray) solid;
+  border-radius: 6px;
+  border: none;
+  margin-right: 2vw;
+  font-size: 120%;
+  font-weight: normal;
+
+  box-shadow: inset 0 0 0 0 var(--gray);
+  transition: box-shadow .25s ease-in-out, color .25s ease-in-out;
+}
+
+.button:hover {
+  box-shadow: inset 0 -40px 0 0 var(--gray);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.buttons {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  align-self: center;
+  height: auto;
+}
+
+.difficulty-panel {
+  max-width: 30%;
+  display: inline-block;
+  padding-top: 2vh;
+}
+
+.difficulty-info {
+  width: 85%;
+  text-align: center;
+  font-weight: normal;
+  font-size: 16px;
+  opacity: 20%;
+  margin-top: 10px;
+}
+
+.github-logo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 6vh;
+  height: 6vh;
+  padding: 2.5vh;
+
+  opacity: 45%;
+  transition: opacity .3s;
+}
+
+.github-logo:hover {
+  opacity: 80%;
+}

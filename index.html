@@ -1,4 +1,53 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <h2>JavaScript Projesi</h2>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="QL4-kayEdC8zDx3sqF0Z73n8UQPw7rXrOVJiEvtOASg" />
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="style.css">
+    
 </head>
+<body>
+    <div class="title" id="title">
+        <span>Minesweeper</span>
+    </div>
+
+    <div class="game" id="game">
+        <div class="timer-box animation">
+            <div class="timer" id="timer">0:00</div>
+        </div>
+        <div class="mine-count">
+            <span id="mineCounter"></span>
+        </div>
+        <div class="table unselectable" id="table"></div>
+    </div>
+
+    <div class="buttons unselectable">
+        <div class="difficulty-buttons">
+            <div class="difficulty-panel">
+                <button type="button" class="button" onclick="start(9, 9, 10)" onmouseover="">Easy</button>
+                <p class="difficulty-info">9x9 Area - 10 Mines</p>
+            </div>
+            <div class="difficulty-panel">
+                <button type="button" class="button" onclick="start(16, 16, 40)">Normal</button>
+                <p class="difficulty-info">16x16 Area - 40 Mines</p>
+            </div>
+            <div class="difficulty-panel">
+                <button type="button" class="button" onclick="start(30, 16, 99)">Hard</button>
+                <p class="difficulty-info">30x16 Area - 99 Mines</p>
+            </div>
+    </div>
+
+    <div class="best-times" id="bestTimes">
+        <h2>Best Times</h2>
+        <div class="best-time" id="bestTime-easy">Easy: -</div>
+        <div class="best-time" id="bestTime-normal">Normal: -</div>
+        <div class="best-time" id="bestTime-hard">Hard: -</div>
+    </div>
+
+    <a href="https://github.com/eylloztek/eylloztek.github.io" class="github-logo"><img src="assets/github-logo.png" class="github-logo"></a>
+    <script src="timer.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
