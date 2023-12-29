@@ -14,6 +14,7 @@ let generatedBombs = false;
 let started = false;
 let gameLost = false;
 let gameWon = false;
+let isGameOver = false;
 
 const numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"];
 const EMPTY = 0, MINE = -1, NUMBER = 1, FLAG_RIGHT = -2, FLAG_WRONG = 2;
@@ -250,8 +251,6 @@ function onRightClick(elem, x, y) {
 
     }
 
-    
-
 }
 
 function resetGame() {
@@ -263,13 +262,20 @@ function resetGame() {
 function start(x, y, bombsAmount) {
     resetGame();
 
-    const easyBestTime = localStorage.getItem(easyBestTimeKey);
-    const normalBestTime = localStorage.getItem(normalBestTimeKey);
-    const hardBestTime = localStorage.getItem(hardBestTimeKey);
+    if (isGameOver) {
+        isGameOver = false;
+        timerBox.classList.add("animation");
+    }
 
-    document.getElementById('easyBestTime').innerText = easyBestTime || '--:--';
-    document.getElementById('normalBestTime').innerText = normalBestTime || '--:--';
-    document.getElementById('hardBestTime').innerText = hardBestTime || '--:--';
+    updateBestTimesDisplay();
+
+    updateMineCounter('easy', bombsAmount);
+    updateMineCounter('normal', bombsAmount);
+    updateMineCounter('hard', bombsAmount);
+
+    isTimerActive = false;
+    timerBox.classList.add("animation");
+    timer.innerHTML = "0:00"
 
     while (tableDiv.firstElementChild != null) {
         tableDiv.firstElementChild.remove();
@@ -336,43 +342,3 @@ function updateMineCounter() {
     document.getElementById("mineCounter").innerText = mineCounter;
 }
 
-function getBestTimes() {
-    const bestTimes = {};
-    difficultyKeys.forEach(difficulty => {
-        const storedTime = localStorage.getItem(difficulty);
-        bestTimes[difficulty] = storedTime ? parseInt(storedTime) : null;
-    });
-    return bestTimes;
-}
-
-function setBestTime(difficulty, time) {
-    localStorage.setItem(difficulty, time);
-}
-
-function updateBestTime(difficulty, time) {
-    const bestTime = localStorage.getItem(difficulty);
-    if (!bestTime || time < parseInt(bestTime)) {
-        setBestTime(difficulty, time);
-    }
-}
-
-function updateBestTimesDisplay() {
-    const bestTimes = getBestTimes();
-    difficultyKeys.forEach(difficulty => {
-        const bestTime = bestTimes[difficulty];
-        const bestTimeDisplay = document.getElementById(`bestTime-${difficulty}`);
-        if (bestTime !== null) {
-            bestTimeDisplay.innerText = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}: ${formatTime(bestTime)}`;
-        } else {
-            bestTimeDisplay.innerText = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}: -`;
-        }
-    });
-}
-
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-}
-
-updateBestTimesDisplay();
