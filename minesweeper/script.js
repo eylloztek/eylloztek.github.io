@@ -1,6 +1,5 @@
 const table = [];
 const tableHTML = [];
-const BEST_TIMES_COOKIE_NAME = "bestTimes";
 
 const gameDiv = document.getElementById("game");
 const tableDiv = document.getElementById("table");
@@ -295,7 +294,23 @@ function startAnimation() {
 
 function win() {
     stopTimer();
-    alert("You won the game. Congratulations!");
+    const currentTime = timer.innerHTML;
+
+    // Get the difficulty level
+    const difficulty = sizeX === 9 ? 'easy' : (sizeX === 16 ? 'normal' : 'hard');
+
+    // Get the best time from the cookie
+    const bestTime = getCookie('bestTime-' + difficulty);
+
+    // Check if the current time is better than the stored best time
+    if (bestTime === '-' || currentTime < bestTime) {
+        setCookie('bestTime-' + difficulty, currentTime, 365);
+        alert('New best time for ' + difficulty + ' difficulty!');
+    } else {
+        alert('You won the game. Congratulations!');
+    }
+
+    displayBestTimes();
 }
 
 function gameOver() {
@@ -321,47 +336,28 @@ function updateMineCounter() {
     document.getElementById("mineCounter").innerText = mineCounter;
 }
 
-function getBestTimes() {
-    const bestTimesCookie = getCookie(BEST_TIMES_COOKIE_NAME);
-    return bestTimesCookie ? JSON.parse(bestTimesCookie) : {};
+function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString();
 }
 
-// En iyi süreleri ayarlamak
-function setBestTimes(bestTimes) {
-    document.cookie = `${BEST_TIMES_COOKIE_NAME}=${JSON.stringify(bestTimes)}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-    updateBestTimesUI(bestTimes); // UI güncelleme fonksiyonunu çağır
+function getCookie(name) {
+    const keyValue = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return keyValue ? keyValue[2] : null;
 }
 
-// En iyi süreleri UI (HTML) üzerinde güncellemek
-function updateBestTimesUI(bestTimes) {
-    // Örnek: easy, normal ve hard zorlukları için
-    const difficultyLevels = ["easy", "normal", "hard"];
-    difficultyLevels.forEach((difficulty) => {
-        const bestTimeElement = document.getElementById(`bestTime-${difficulty}`);
-        const time = bestTimes[difficulty] || "-";
-        bestTimeElement.textContent = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}: ${time}`;
-    });
+function resetBestTimes() {
+    setCookie('bestTime-easy', '-', -1);
+    setCookie('bestTime-normal', '-', -1);
+    setCookie('bestTime-hard', '-', -1);
+    displayBestTimes();
 }
 
-// Bir cookie'yi almak
-function getCookie(cookieName) {
-    const name = `${cookieName}=`;
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookieArray = decodedCookie.split(';');
-    for (let i = 0; i < cookieArray.length; i++) {
-        let cookie = cookieArray[i];
-        while (cookie.charAt(0) === ' ') {
-            cookie = cookie.substring(1);
-        }
-        if (cookie.indexOf(name) === 0) {
-            return cookie.substring(name.length, cookie.length);
-        }
-    }
-    return null;
+function displayBestTimes() {
+    document.getElementById('bestTime-easy').innerText = 'Easy: ' + getCookie('bestTime-easy');
+    document.getElementById('bestTime-normal').innerText = 'Normal: ' + getCookie('bestTime-normal');
+    document.getElementById('bestTime-hard').innerText = 'Hard: ' + getCookie('bestTime-hard');
 }
 
-// Sayfa yüklendiğinde en iyi süreleri göster
-document.addEventListener("DOMContentLoaded", function () {
-    const bestTimes = getBestTimes();
-    updateBestTimesUI(bestTimes);
-});
+displayBestTimes();
