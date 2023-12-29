@@ -127,7 +127,7 @@
 }
 
 .mine-count {
-    display: flex;
+    display: grid;
     justify-content: flex-end;
     margin-bottom: 10px;
     font-size: 18px;

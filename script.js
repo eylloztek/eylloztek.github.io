@@ -262,7 +262,14 @@ function resetGame() {
 
 function start(x, y, bombsAmount) {
     resetGame();
-    updateBestTimesDisplay();
+
+    const easyBestTime = localStorage.getItem(easyBestTimeKey);
+    const normalBestTime = localStorage.getItem(normalBestTimeKey);
+    const hardBestTime = localStorage.getItem(hardBestTimeKey);
+
+    document.getElementById('easyBestTime').innerText = easyBestTime || '--:--';
+    document.getElementById('normalBestTime').innerText = normalBestTime || '--:--';
+    document.getElementById('hardBestTime').innerText = hardBestTime || '--:--';
 
     while (tableDiv.firstElementChild != null) {
         tableDiv.firstElementChild.remove();
@@ -302,12 +309,13 @@ function startAnimation() {
 
 function win() {
     stopTimer();
-    alert("Win!");
+    updateBestTimesDisplay();
+    alert("You won the game. Congratulations!");
 }
 
 function gameOver() {
   gameLost = true;
-  alert("Lost!");
+  alert("You've lost the game!");
   generateBombsAfterLoss();
   stopTimer();
 }
