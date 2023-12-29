@@ -299,7 +299,6 @@ function startAnimation() {
 
 function win() {
     stopTimer();
-    updateBestTimesDisplay();
     alert("You won the game. Congratulations!");
 }
 
