@@ -221,20 +221,12 @@ function onRightClick(elem, x, y) {
       return; // Oyun bitmişse tıklamaları işleme
     }
 
-    if (table[y][x] === EMPTY || table[y][x] === MINE) {
-        if (elem.classList.contains("flag")) {
-            elem.classList.remove("flag");
-            mineCounter++;
-        } else {
-            elem.classList.add("flag");
-            mineCounter--;
-        }
-
-        updateMineCounter();
-    }
+    
 
     if(table[y][x] === EMPTY || table[y][x] === MINE) {
         elem.classList.add("flag");
+        mineCounter--;
+            updateMineCounter();
         if(table[y][x] === MINE)
             table[y][x] = FLAG_RIGHT;
         else
@@ -243,10 +235,14 @@ function onRightClick(elem, x, y) {
     else if(table[y][x] === FLAG_RIGHT) {
         table[y][x] = MINE;
         elem.classList.remove("flag");
+        mineCounter++;
+            updateMineCounter();
     }
     else if(table[y][x] === FLAG_WRONG) {
         table[y][x] = EMPTY;
         elem.classList.remove("flag");
+        mineCounter++;
+            updateMineCounter();
 
     }
 

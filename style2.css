@@ -132,7 +132,7 @@
     margin-bottom: 10px;
     font-size: 18px;
     font-weight: bold;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.5s ease-in-out;
 }
 
