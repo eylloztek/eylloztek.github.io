@@ -13,6 +13,11 @@ let generatedBombs = false;
 let started = false;
 let gameLost = false;
 let gameWon = false;
+let bestTimes = {
+    easy: Infinity,
+    normal: Infinity,
+    hard: Infinity,
+  };
 
 const numbers = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"];
 const EMPTY = 0, MINE = -1, NUMBER = 1, FLAG_RIGHT = -2, FLAG_WRONG = 2;
@@ -67,7 +72,7 @@ function getBoxNumber(x, y) {
     return count;
 }
 
-function checkWin() {
+function winCheck() {
     for(let y = 0; y < sizeY; y++) {
         for(let x = 0; x < sizeX; x++) {
             if(table[y][x] === FLAG_WRONG || table[y][x] === EMPTY) {
@@ -98,11 +103,11 @@ function buildTableHTML() {
             }
             box.onclick = (ev) => {
                 ev.preventDefault();
-                onClick(box, x, y);
+                leftClickController(box, x, y);
             }
             box.addEventListener('contextmenu', function(ev) {
                 ev.preventDefault();
-                onRightClick(box, x, y);
+                rightClickController(box, x, y);
                 return false;
             }, false);
             line.appendChild(box);
@@ -111,116 +116,105 @@ function buildTableHTML() {
     }
 }
 
-function onClick(elem, x, y) {
-    onClick(elem, x, y, false);
+function leftClickController(elem, x, y) {
+    leftClickController(elem, x, y, false);
 }
 
-function onClick(elem, x, y, recursion) {
-    if(!generatedBombs) {
+function leftClickController(elem, x, y, recursion) {
+    if (!generatedBombs) {
         generateBombs(x, y);
         startTimer();
         firstClick = false;
     }
     if (!started || gameLost || gameWon) {
-      return; // Oyun bitmişse tıklamaları işleme
+        return;
     }
-    if(table[y][x] === MINE) {
+    if (table[y][x] === MINE) {
         gameOver();
         return;
-    }
-    else if(table[y][x] !== EMPTY) {
-        let nr = tableHTML[y][x].innerText
-        if(nr === undefined || nr === 0)
-            return;
+    } else if (table[y][x] !== EMPTY) {
+        let nr = tableHTML[y][x].innerText;
+        if (nr === undefined || nr === 0) return;
+
         let flags = 0;
         let noEmpty = true;
-        for(let i = -1; i <= 1; i++) {
-            for(let j = -1; j <= 1; j++) {
-                let xx = x+i;
-                if(xx < 0 || xx > sizeX)
-                    continue;
-                let yy = y+j;
-                if(yy < 0 || yy > sizeY)
-                    continue;
-                if(table[yy][xx] === FLAG_WRONG)
-                    gameOver();
-                if(table[yy][xx] === FLAG_RIGHT)
-                    flags++;
-                else if(table[yy][xx] === EMPTY)
-                    noEmpty = false;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                let xx = x + i;
+                if (xx < 0 || xx >= sizeX) continue;
+                let yy = y + j;
+                if (yy < 0 || yy >= sizeY) continue;
+                if (table[yy][xx] === FLAG_WRONG) gameOver();
+                if (table[yy][xx] === FLAG_RIGHT) flags++;
+                else if (table[yy][xx] === EMPTY) noEmpty = false;
             }
         }
-        if(noEmpty)
-            return;
-        if(flags.toString() !== nr)
-            return;
-        for(let i = -1; i <= 1; i++) {
-            for(let j = -1; j <= 1; j++) {
-                let xx = x+i;
-                if(xx < 0 || xx > sizeX)
-                    continue;
-                let yy = y+j;
-                if(yy < 0 || yy > sizeY)
-                    continue;
-                if(table[yy][xx] === EMPTY)
-                    onClick(tableHTML[yy][xx], xx, yy, true);
+        if (noEmpty) return;
+        if (flags.toString() !== nr) return;
+
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                let xx = x + i;
+                if (xx < 0 || xx >= sizeX) continue;
+                let yy = y + j;
+                if (yy < 0 || yy >= sizeY) continue;
+                if (table[yy][xx] === EMPTY)
+                    leftClickController(tableHTML[yy][xx], xx, yy, true);
             }
         }
         return;
     }
 
-    if(!recursion)
-
-    table[y][x] = NUMBER;
-    elem.classList.add("number");
-    let nr = getBoxNumber(x, y);
-    elem.classList.add(numbers[nr]);
-    if(nr === 0) {
-        const emptyNeighbours = [];
-        let xx, yy, elemTemp;
-        emptyNeighbours.push({x: x, y: y});
-        while(emptyNeighbours.length > 0) {
-            for (let i = -1; i < 2; i++) {
-                for (let j = -1; j < 2; j++) {
-                    xx = emptyNeighbours[0].x+j;
-                    yy = emptyNeighbours[0].y+i;
-                    if (yy >= 0 && xx >= 0 && yy < sizeY && xx < sizeX) {
-                        if (table[yy][xx] === EMPTY) {
-                            elemTemp = tableHTML[yy][xx];
-                            elemTemp.classList.add("number");
-                            nr = getBoxNumber(xx, yy);
-                            elemTemp.classList.add(numbers[nr]);
-                            if(nr === 0) {
-                                emptyNeighbours.push({x: xx, y: yy});
+    if (!recursion) {
+        table[y][x] = NUMBER;
+        elem.classList.add("number");
+        let nr = getBoxNumber(x, y);
+        elem.classList.add(numbers[nr]);
+        if (nr === 0) {
+            const emptyNeighbours = [];
+            let xx, yy, elemTemp;
+            emptyNeighbours.push({x: x, y: y});
+            while(emptyNeighbours.length > 0) {
+                for (let i = -1; i < 2; i++) {
+                    for (let j = -1; j < 2; j++) {
+                        xx = emptyNeighbours[0].x+j;
+                        yy = emptyNeighbours[0].y+i;
+                        if (yy >= 0 && xx >= 0 && yy < sizeY && xx < sizeX) {
+                            if (table[yy][xx] === EMPTY) {
+                                elemTemp = tableHTML[yy][xx];
+                                elemTemp.classList.add("number");
+                                nr = getBoxNumber(xx, yy);
+                                elemTemp.classList.add(numbers[nr]);
+                                if(nr === 0) {
+                                    emptyNeighbours.push({x: xx, y: yy});
+                                }
+                                else {
+                                    elemTemp.innerText = nr.toString();
+                                }
+                                table[yy][xx] = NUMBER;
                             }
-                            else {
-                                elemTemp.innerText = nr.toString();
-                            }
-                            table[yy][xx] = NUMBER;
                         }
                     }
                 }
+                emptyNeighbours.shift();
             }
-            emptyNeighbours.shift();
+        } else {
+            elem.innerText = nr.toString();
         }
+        table[y][x] = NUMBER;
+        winCheck();
     }
-    else {
-        elem.innerText = nr.toString();
-    }
-    checkWin();
 }
 
-function onRightClick(elem, x, y) {
+function rightClickController(elem, x, y) {
     if(!generatedBombs) {
         generateBombs(x, y);
         firstClick = false;
     }
 
     if (!started || gameLost || gameWon) {
-      return; // Oyun bitmişse tıklamaları işleme
+      return;
     }
-
-    
 
     if(table[y][x] === EMPTY || table[y][x] === MINE) {
         elem.classList.add("flag");
@@ -294,23 +288,16 @@ function startAnimation() {
 
 function win() {
     stopTimer();
-    const currentTime = timer.innerHTML;
 
-    // Get the difficulty level
-    const difficulty = sizeX === 9 ? 'easy' : (sizeX === 16 ? 'normal' : 'hard');
+    const difficulty = getDifficulty();
+    const currentTime = getElapsedTime();
 
-    // Get the best time from the cookie
-    const bestTime = getCookie('bestTime-' + difficulty);
-
-    // Check if the current time is better than the stored best time
-    if (bestTime === '-' || currentTime < bestTime) {
-        setCookie('bestTime-' + difficulty, currentTime, 365);
-        alert('New best time for ' + difficulty + ' difficulty!');
-    } else {
-        alert('You won the game. Congratulations!');
+    if (currentTime < bestTimes[difficulty]) {
+        bestTimes[difficulty] = currentTime;
+        updateBestTimes();
     }
 
-    displayBestTimes();
+    alert('You won the game. Congratulations!');
 }
 
 function gameOver() {
@@ -336,28 +323,25 @@ function updateMineCounter() {
     document.getElementById("mineCounter").innerText = mineCounter;
 }
 
-function setCookie(name, value, days) {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString();
+function updateBestTimes() {
+    document.getElementById("bestTime-easy").innerText = `Easy: ${formatTime(bestTimes.easy)}`;
+    document.getElementById("bestTime-normal").innerText = `Normal: ${formatTime(bestTimes.normal)}`;
+    document.getElementById("bestTime-hard").innerText = `Hard: ${formatTime(bestTimes.hard)}`;
 }
 
-function getCookie(name) {
-    const keyValue = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-    return keyValue ? keyValue[2] : null;
+function getDifficulty() {
+    if (sizeX === 9 && sizeY === 9 && bombs === 10) {
+        return 'easy';
+    } else if (sizeX === 16 && sizeY === 16 && bombs === 40) {
+        return 'normal';
+    } else if (sizeX === 30 && sizeY === 16 && bombs === 99) {
+        return 'hard';
+    }
+    return 'unknown';
 }
 
-function resetBestTimes() {
-    setCookie('bestTime-easy', '-', -1);
-    setCookie('bestTime-normal', '-', -1);
-    setCookie('bestTime-hard', '-', -1);
-    displayBestTimes();
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
 }
-
-function displayBestTimes() {
-    document.getElementById('bestTime-easy').innerText = 'Easy: ' + getCookie('bestTime-easy');
-    document.getElementById('bestTime-normal').innerText = 'Normal: ' + getCookie('bestTime-normal');
-    document.getElementById('bestTime-hard').innerText = 'Hard: ' + getCookie('bestTime-hard');
-}
-
-displayBestTimes();

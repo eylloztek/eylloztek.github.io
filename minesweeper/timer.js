@@ -10,7 +10,7 @@ function startTimer() {
     timerBox.classList.remove("animation");
     elapsedTime = 0;
     timer.innerHTML = "0:00";
-    clearInterval(timerInterval); // Timer başlamadan önce varsa eski timer'ı temizle
+    clearInterval(timerInterval);
     timerInterval = setInterval(function () {
         if (isTimerActive) {
             elapsedTime += 1;
@@ -36,4 +36,8 @@ function resetTimer() {
     elapsedTime = 0;
     timer.innerHTML = "0:00";
     clearInterval(timerInterval);
+}
+
+function getElapsedTime() {
+    return elapsedTime;
 }
