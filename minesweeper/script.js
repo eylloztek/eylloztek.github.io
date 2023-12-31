@@ -287,17 +287,20 @@ function startAnimation() {
 }
 
 function win() {
-    stopTimer();
+    if (!gameWon) {
+        gameWon = true;
+        stopTimer();
 
-    const difficulty = getDifficulty();
-    const currentTime = getElapsedTime();
+        const difficulty = getDifficulty();
+        const currentTime = getElapsedTime();
 
-    if (currentTime < bestTimes[difficulty]) {
-        bestTimes[difficulty] = currentTime;
-        updateBestTimes();
+        if (currentTime < bestTimes[difficulty]) {
+            bestTimes[difficulty] = currentTime;
+            updateBestTimes();
+        }
+
+        alert('You won the game. Congratulations!');
     }
-
-    alert('You won the game. Congratulations!');
 }
 
 function gameOver() {
